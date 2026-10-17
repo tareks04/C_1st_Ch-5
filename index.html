@@ -1,0 +1,776 @@
+﻿<!DOCTYPE html>
+<html lang="bn" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>কর্মমুখী রসায়ন (C-05)</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Font: Hind Siliguri -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        bangla: ['Hind Siliguri', 'sans-serif'],
+                    },
+                    colors: {
+                        skull: {
+                            bg: '#05070c',
+                            surface: '#0b101d',
+                            card: '#101728',
+                            border: '#1e293b',
+                            accent: '#6366f1'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #05070c;
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(16, 185, 129, 0.06) 0px, transparent 50%);
+            color: #f1f5f9;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #05070c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        /* Glassmorphism Skull Styling */
+        .skull-card {
+            background: rgba(16, 23, 40, 0.9);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .glow-indigo {
+            box-shadow: 0 0 30px -5px rgba(99, 102, 241, 0.2);
+        }
+
+        .glow-emerald {
+            box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.25);
+        }
+
+        .animated-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <!-- Top Fixed Header -->
+    <header class="sticky top-0 z-40 skull-card border-b border-slate-800/80 shadow-2xl">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-emerald-500 flex items-center justify-center font-bold text-xl shadow-lg text-white">
+                    💀
+                </div>
+                <div>
+                    <h1 class="text-base md:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-300 to-emerald-400 leading-tight">
+                        কর্মমুখী রসায়ন 
+                    </h1>
+                    <p class="text-xs text-slate-400">রসায়ন প্রথম পত্র (C-05)</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-2">
+                <button onclick="confirmReset()" class="animated-btn flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs md:text-sm font-medium bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 active:scale-95">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    <span>রিসেট (Reset)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="w-full bg-slate-950 h-1.5">
+            <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-1.5 transition-all duration-300 w-0"></div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="max-w-6xl mx-auto w-full px-4 py-6 md:py-8 flex-grow">
+
+        <!-- Live Statistics Grid -->
+        <div id="stats-strip" class="mb-6 grid grid-cols-3 gap-3">
+            <div class="skull-card p-3 rounded-2xl text-center border border-slate-800">
+                <span class="text-xs text-slate-400 block mb-0.5">মোট প্রশ্ন</span>
+                <span id="stat-total" class="text-lg md:text-2xl font-bold text-indigo-400">74</span>
+            </div>
+            <div class="skull-card p-3 rounded-2xl text-center border border-slate-800">
+                <span class="text-xs text-slate-400 block mb-0.5">উত্তর প্রদান</span>
+                <span id="stat-answered" class="text-lg md:text-2xl font-bold text-amber-400">0</span>
+            </div>
+            <div class="skull-card p-3 rounded-2xl text-center border border-slate-800">
+                <span class="text-xs text-slate-400 block mb-0.5">বর্তমান স্কোর</span>
+                <span id="stat-score" class="text-lg md:text-2xl font-bold text-emerald-400">0</span>
+            </div>
+        </div>
+
+        <!-- Question Quick Navigator -->
+        <div class="mb-6 skull-card p-3.5 rounded-2xl border border-slate-800">
+            <div class="flex justify-between items-center mb-2.5 px-1">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">প্রশ্ন নেভিগেটর (১ - ৭৪)</span>
+                <span id="completion-tag" class="text-xs text-indigo-400 font-semibold bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">0% সম্পন্ন</span>
+            </div>
+            <div id="nav-grid" class="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto pr-1">
+                <!-- Navigation buttons generated by JS -->
+            </div>
+        </div>
+
+        <!-- Quiz card + saved bookmarks sidebar -->
+        <div id="quiz-bookmark-layout" class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-5 items-start mb-6">
+        <!-- Main Quiz Question Card -->
+        <div id="quiz-card" class="skull-card rounded-3xl p-5 md:p-8 border border-slate-800 glow-indigo relative transition-all">
+            
+            <!-- Question Meta Header -->
+            <div class="flex flex-wrap justify-between items-center gap-3 mb-4 pb-3 border-b border-slate-800/80">
+                <span id="question-badge" class="px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-bold rounded-full">
+                    প্রশ্ন ১ / ৭৪
+                </span>
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-xs text-slate-400 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-800">
+                        কর্মমুখী রসায়ন (C-05)
+                    </span>
+                    <button id="bookmark-current-btn" onclick="toggleCurrentBookmark()" aria-pressed="false" class="animated-btn px-3 py-1.5 rounded-xl text-xs md:text-sm font-semibold bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/30">
+                        ☆ বুকমার্ক করুন
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question Title -->
+            <h2 id="question-text" class="text-lg md:text-xl font-bold text-slate-100 mb-6 leading-relaxed">
+                লোড হচ্ছে...
+            </h2>
+
+            <!-- MCQ Options Container -->
+            <div id="options-container" class="space-y-3 mb-6">
+                <!-- Options injected by JS -->
+            </div>
+
+            <!-- Instant Fact & Explanation Box -->
+            <div id="rationale-box" class="hidden mb-6 p-4 rounded-2xl border transition-all text-sm leading-relaxed">
+                <div id="rationale-title" class="font-bold mb-1 flex items-center gap-2 text-base"></div>
+                <p id="rationale-text" class="text-slate-300"></p>
+            </div>
+
+            <!-- Footer Navigation Controls -->
+            <div class="flex justify-between items-center pt-4 border-t border-slate-800/80">
+                <button id="prev-btn" onclick="navigateQuestion(-1)" class="animated-btn px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700/60 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1">
+                    ← পূর্ববর্তী
+                </button>
+                <button id="next-btn" onclick="navigateQuestion(1)" class="animated-btn px-6 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-600 to-emerald-600 hover:from-indigo-500 hover:to-emerald-500 text-white shadow-lg shadow-indigo-600/30 flex items-center gap-1">
+                    পরবর্তী →
+                </button>
+            </div>
+        </div>
+
+        <!-- Bookmarked Questions Sidebar -->
+        <aside id="bookmark-sidebar" class="skull-card rounded-3xl p-4 border border-amber-500/20 lg:sticky lg:top-28">
+            <div class="flex items-center justify-between gap-2 mb-2">
+                <h2 class="text-base font-bold text-amber-300">★ বুকমার্ক করা প্রশ্ন</h2>
+                <span id="bookmark-count" class="text-xs font-bold text-amber-200 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-1">0</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">গুরুত্বপূর্ণ বা ভুল হওয়া প্রশ্ন এখানে জমা থাকবে। যেকোনো প্রশ্নে চাপ দিলে সরাসরি সেখানে যেতে পারবেন।</p>
+            <div id="bookmark-list" class="space-y-2 max-h-[42vh] overflow-y-auto pr-1">
+                <p class="text-sm text-slate-500 py-3 text-center">এখনও কোনো প্রশ্ন বুকমার্ক করা হয়নি।</p>
+            </div>
+            <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-slate-800">
+                <button onclick="exportBookmarks()" class="animated-btn px-2 py-2 rounded-xl text-xs font-semibold bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 border border-indigo-500/20">⬇ ব্যাকআপ</button>
+                <button onclick="document.getElementById('bookmark-import-input').click()" class="animated-btn px-2 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200 hover:bg-slate-700 border border-slate-700">⬆ রিস্টোর</button>
+            </div>
+            <input id="bookmark-import-input" type="file" accept="application/json,.json" class="hidden" onchange="importBookmarks(event)">
+            <p class="text-[11px] text-slate-500 mt-2 leading-relaxed">অন্য ব্রাউজারে নেওয়ার জন্য ব্যাকআপ ডাউনলোড করে সেখানে রিস্টোর করুন।</p>
+        </aside>
+        </div>
+
+        <!-- Quiz Completion Results Screen -->
+        <div id="result-screen" class="hidden skull-card rounded-3xl p-6 md:p-10 text-center border border-slate-800 glow-emerald">
+            <div class="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-4xl shadow-xl shadow-emerald-500/20 text-white">
+                🏆
+            </div>
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">কুইজ সম্পন্ন হয়েছে!</h2>
+            <p class="text-slate-400 text-sm mb-6">আপনার চূড়ান্ত ফলাফলের বিবরণ নিচে দেওয়া হলো</p>
+
+            <!-- Results Metrics -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
+                <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
+                    <span class="text-xs text-slate-400 block mb-1">মোট প্রশ্ন</span>
+                    <span id="res-total" class="text-2xl font-bold text-indigo-400">74</span>
+                </div>
+                <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
+                    <span class="text-xs text-slate-400 block mb-1">সঠিক উত্তর</span>
+                    <span id="res-correct" class="text-2xl font-bold text-emerald-400">0</span>
+                </div>
+                <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
+                    <span class="text-xs text-slate-400 block mb-1">ভুল উত্তর</span>
+                    <span id="res-wrong" class="text-2xl font-bold text-rose-400">0</span>
+                </div>
+                <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800">
+                    <span class="text-xs text-slate-400 block mb-1">সাফল্যের হার</span>
+                    <span id="res-accuracy" class="text-2xl font-bold text-amber-400">0%</span>
+                </div>
+            </div>
+
+            <!-- Action Controls -->
+            <div class="flex flex-wrap justify-center gap-3">
+                <button onclick="restartQuiz()" class="animated-btn px-6 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-indigo-600 to-emerald-600 hover:from-indigo-500 hover:to-emerald-500 text-white shadow-lg shadow-indigo-600/30">
+                    🔄 পুনরায় পরীক্ষা দিন
+                </button>
+                <button onclick="toggleReviewMode()" class="animated-btn px-6 py-3 rounded-xl font-bold text-sm bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700">
+                    📋 উত্তর পর্যালোচনা (Review)
+                </button>
+            </div>
+
+            <!-- Detailed Review Container -->
+            <div id="review-container" class="hidden mt-8 text-left space-y-4 pt-6 border-t border-slate-800">
+                <h3 class="text-lg font-bold text-slate-200 mb-4 flex items-center gap-2">
+                    <span>📌</span> সকল প্রশ্নের বিস্তারিত পর্যালোচনা (১ - ৭৪)
+                </h3>
+                <div id="review-list" class="space-y-4 max-h-[500px] overflow-y-auto pr-2"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Reset Confirmation Modal -->
+    <div id="reset-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="skull-card border border-slate-800 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl">
+            <div class="w-12 h-12 mx-auto mb-3 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center text-xl font-bold">
+                ⚠️
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">কুইজ রিসেট করতে চান?</h3>
+            <p class="text-xs text-slate-400 mb-6">আপনার বর্তমান ফলাফল এবং উত্তরসমূহ মুছে পুনরায় শুরু হবে।</p>
+            <div class="flex gap-3 justify-center">
+                <button onclick="closeResetModal()" class="animated-btn px-4 py-2.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300">
+                    বাতিল
+                </button>
+                <button onclick="executeReset()" class="animated-btn px-5 py-2.5 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30">
+                    হ্যাঁ, রিসেট করুন
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-4 border-t border-slate-800/80 text-center text-xs text-slate-500">
+         Content Of Tarek-Copyrighted
+    </footer>
+
+    <script>
+        // ==========================================
+        // C-05 অধ্যায়ের ৭৪টি এমসিকিউ ডাটা (Skull Dataset)
+        // ==========================================
+        const quizData = [
+            { id: 1, question: "খাদ্যদ্রব্য পচনে অন্যতম সহায়ক কোনটি?", options: ["SO₂", "N₂O", "NO₂", "O₂"], correct: 3, fact: "অক্সিজেন (O₂) খাদ্যদ্রব্যে ব্যাকটিরিয়া ও ছত্রাকের বংশবৃদ্ধি ও জারণ ঘটিয়ে পচনে সহায়তা করে।" },
+            { id: 2, question: "কোনটি প্রাকৃতিক খাদ্য সংরক্ষক?", options: ["ফরমালিন", "সালফার ডাইঅক্সাইড", "সোডিয়াম নাইট্রেট", "সোডিয়াম ক্লোরাইড (লবণ)"], correct: 3, fact: "সাধারণ লবণ (NaCl) প্রাচীনকাল থেকে মাছ, মাংস সংরক্ষণে প্রাকৃতিক প্রিজারভেটিভ হিসেবে ব্যবহৃত হয়ে আসছে।" },
+            { id: 3, question: "নিরাপদ কৃত্রিম খাদ্য সংরক্ষক হিসেবে পরিচিত কোনটি?", options: ["সোডিয়াম বেনজোয়েট", "সোডিয়াম নাইট্রাইট", "ক্যালসিয়াম প্রোপানয়েট", "ক্যালসিয়াম কার্বাইড"], correct: 0, fact: "সোডিয়াম বেনজোয়েট (C6H5COONa) একটি নিরাপদ ও বহুল ব্যবহৃত কৃত্রিম খাদ্য সংরক্ষক।" },
+            { id: 4, question: "কৃত্রিম খাদ্য প্রিজারভেটিভস কোনটি?", options: ["NaCl", "C₁₂H₂₂O₁₁", "HCHO এর 40% দ্রবণ", "C₆H₅COOH (বেনজয়িক এসিড)"], correct: 3, fact: "বেনজয়িক এসিড এবং এর লবণ খাদ্য সংরক্ষণে কৃত্রিম প্রিজারভেটিভ হিসেবে ব্যবহৃত হয়।" },
+            { id: 5, question: "নিচের কোনটি অ্যান্টিমাইক্রোবিয়াল প্রিজারভেটিভ নয়?", options: ["সোডিয়াম বাইসালফাইট", "পটাসিয়াম বাইসালফাইট", "সোডিয়াম নাইট্রাইট", "ফরমালিন"], correct: 3, fact: "ফরমালিন অত্যন্ত বিষাক্ত এবং খাদ্য সংরক্ষণে নিষিদ্ধ; এটি জৈব নমুনা সংরক্ষণে ব্যবহৃত হয়।" },
+            { id: 6, question: "প্রিজারভেটিভরূপে ব্যবহৃত সাইট্রিক এসিডের pH মান কত থাকে?", options: ["pH 4.74", "pH 4.50", "pH 3.14", "pH 3.01"], correct: 2, fact: "খাদ্য সংরক্ষক হিসেবে ব্যবহৃত সাইট্রিক এসিডের pH প্রায় 3.14 হয়ে থাকে।" },
+            { id: 7, question: "খাদ্য সংরক্ষণে ব্যবহৃত অ্যান্টিঅক্সিডেন্ট কোনটি?", options: ["EDTA", "C₆H₁₂O₆", "CH₃COOH", "BHT"], correct: 3, fact: "বিউটাইলেটেড হাইড্রোক্সি টলুইন (BHT) একটি কার্যকরী কৃত্রিম অ্যান্টিঅক্সিডেন্ট।" },
+            { id: 8, question: "কৃত্রিম অ্যান্টিঅক্সিডেন্ট কোনটি?", options: ["ভিটামিন-C", "NaCl", "সুগার", "প্রোপাইল গ্যালেট"], correct: 3, fact: "প্রোপাইল গ্যালেট তৈল ও চর্বিজাতীয় খাদ্যে জারণ রোধে কৃত্রিম অ্যান্টিঅক্সিডেন্ট হিসেবে ব্যবহৃত হয়।" },
+            { id: 9, question: "BHA-এর পূর্ণরূপ কী?", options: ["Butylated hydroxy anisole", "Butalated hydroxy acetate", "Butahydrated hydroxy anisol", "Butahydrated hydroxy amine"], correct: 0, fact: "BHA-এর পূর্ণরূপ হলো Butylated hydroxy anisole।" },
+            { id: 10, question: "তৈল ও চর্বিযুক্ত খাদ্যকে সংরক্ষণে কোনটি ব্যবহৃত হয়?", options: ["BHA", "BTA", "EDTA", "BAH"], correct: 0, fact: "BHA তৈল ও চর্বিজাতীয় খাদ্যের rancidity বা গন্ধ হয়ে যাওয়া রোধ করে।" },
+            { id: 11, question: "সবজি সংরক্ষণের জন্য নিচের কোনটিতে সবজিকে ডুবিয়ে রাখা হয়?", options: ["চিনির দ্রবণ", "লবণের দ্রবণ", "ফরমালিন", "তৈল"], correct: 1, fact: "সবজি সংরক্ষণে লবণের গাঢ় দ্রবণে ডুবিয়ে রাখা হয় (Brining প্রক্রিয়া)।" },
+            { id: 12, question: "আম কৌটাজাতকরণে কোন যৌগটি ব্যবহৃত হয়?", options: ["ইথানল", "সায়ট্রিক এসিড", "ফরমালিন", "এসকরবিক এসিড"], correct: 1, fact: "আম কৌটাজাতকরণ ও জারণ রোধে সায়ট্রিক এসিড (ভিটামিন সি) ব্যবহৃত হয়।" },
+            { id: 13, question: "নিম্নের কোন এসিডটি আম ও কাঁঠাল কৌটাজাতকরণে ব্যবহৃত হয়?", options: ["সায়ট্রিক এসিড", "সিসটিন", "এসকরবিক এসিড", "কার্বনিক এসিড"], correct: 0, fact: "সায়ট্রিক এসিড ফলমূল কৌটাজাতকরণে অ্যান্টিঅক্সিডেন্ট ও প্রিজারভেটিভ হিসেবে কাজ করে।" },
+            { id: 14, question: "জুস সংরক্ষণে নিচের কোন প্রিজারভেটিভ ব্যবহার করা হয়?", options: ["ভিনেগার", "পটাসিয়াম মেটাবাইসালফাইট", "SO₂", "সোডিয়াম বেনজোয়েট"], correct: 3, fact: "ফলমূলের জুস ও পানীয় সংরক্ষণে সোডিয়াম বেনজোয়েট ব্যবহৃত হয়।" },
+            { id: 15, question: "মাছ, মাংস সংরক্ষণে ব্যবহৃত প্রিজারভেটিভ কোনটি?", options: ["সোডিয়াম বেনজোয়েট", "সোডিয়াম নাইট্রাইট", "সরবিক এসিড", "প্রোপানোয়িক এসিড"], correct: 1, fact: "সোডিয়াম নাইট্রাইট (NaNO2) মাছ ও মাংসের কিউরিং ও সংরক্ষণে ব্যবহৃত হয়।" },
+            { id: 16, question: "দুধ হচ্ছে-নিচের কোনটি?", options: ["জেল", "ইমালশন", "সাসপেনশন", "সল"], correct: 3, fact: "দুধ হলো সল ।" },
+            { id: 17, question: "কোন্ প্রাণীর দুধে শক্তি (ক্যালরি) বেশি থাকে?", options: ["গাভী", "মহিষ", "ছাগল", "ভেড়া"], correct: 1, fact: "মহিষের দুধে ফ্যাট ও শক্তির পরিমাণ অন্যান্য প্রাণীর তুলনায় বেশি থাকে।" },
+            { id: 18, question: "দুধের প্রধান প্রোটিন কোনটি?", options: ["ক্যারোটিন", "লিপিড", "ক্যাসিন", "ল্যাকটাবুমিন"], correct: 2, fact: "ক্যাসিন (Casein) হলো দুধের প্রধান প্রোটিন।" },
+            { id: 19, question: "কোনটি মানবদেহে প্রোটিনের চাহিদা মেটায়?", options: ["ভাত", "শাক-সবজি", "পানি", "মাছ"], correct: 3, fact: "মাছ আমিষ জাতীয় খাদ্য হওয়ায় মানবদেহের প্রোটিনের চাহিদা মেটায়।" },
+            { id: 20, question: "দুধে নিচের কোন আয়নসমূহের সেটটি অধিক পরিমাণে থাকে?", options: ["K⁺, Ca²⁺, Cl⁻", "Ca²⁺, Mg²⁺, Fe³⁺", "K⁺, Cu²⁺, P³⁻", "Na⁺, K⁺, Cl⁻"], correct: 0, fact: "দুধে পটাশিয়াম, ক্যালসিয়াম এবং ক্লোরাইড আয়ন পর্যাপ্ত পরিমাণে থাকে।" },
+            { id: 21, question: "নিচের কোন প্রাণীর দুধে প্রোটিনের পরিমাণ সবচেয়ে বেশি থাকে?", options: ["মানুষ", "গরু", "মহিষ", "ভেড়ী"], correct: 3, fact: "ভেড়ার দুধে প্রোটিনের পরিমাণ সবচেয়ে বেশি পাওয়া যায়।" },
+            { id: 22, question: "নিচের কোন প্রাণীর দুধে চর্বির পরিমাণ সবচেয়ে বেশি থাকে?", options: ["গরু", "মহিষ", "ছাগল", "ভেড়া"], correct: 1, fact: "মহিষের দুধে ফ্যাট বা চর্বির মাত্রা সর্বাধিক।" },
+            { id: 23, question: "নিচের কোন প্রাণীর দুধে ল্যাকটোজ চিনির পরিমাণ সবচেয়ে বেশি থাকে?", options: ["মানুষ", "মহিষ", "গরু", "ছাগল"], correct: 0, fact: "মানব দুধে ল্যাকটোজ শর্করার পরিমাণ তুলনামূলকভাবে বেশি থাকে।" },
+            { id: 24, question: "দুধে কোন ডাইস্যাকারাইড থাকে?", options: ["সুক্রোজ", "সেলুলোজ", "মল্টোজ", "ল্যাকটোজ"], correct: 3, fact: "দুধে ল্যাকটোজ নামক ডাইস্যাকারাইড শর্করা বিদ্যমান।" },
+            { id: 25, question: "সংগৃহীত দুধের pH নিয়ন্ত্রণের জন্য নিচের কোনটি মিশানো হয়?", options: ["NaHCO₃", "H₂O₂", "NaCl", "NH₃"], correct: 0, fact: "দুধের অম্লতা বৃদ্ধি রোধ ও pH ঠিক রাখতে সোডিয়াম বাইকার্বোনেট মিশানো হয়।" },
+            { id: 26, question: "তরল দুধ সংরক্ষণে কোন পদ্ধতি অবলম্বন করা হয়?", options: ["হিমায়ন", "কোটাজাতকরণ", "পাস্টুরাইজিং", "ভিনেগার"], correct: 2, fact: "পাস্টুরাইজেশন (Pasteurization) প্রক্রিয়ায় তরল দুধ জীবাণুমুক্ত করে সংরক্ষণ করা হয়।" },
+            { id: 27, question: "সাসপেনশনের উদাহরণ কোনটি?", options: ["কর্দমাক্ত মাটি", "চিনির দ্রবণ", "দুধ", "রক্ত"], correct: 3, fact: "রক্ত পুরোপুরি দ্রবীভূত না হয়ে সাসপেনশন গঠন করে।" },
+            { id: 28, question: "পানিতে ময়দার মিশ্রণকে কী বলে?", options: ["দ্রবণ", "কলয়েড", "সাসপেনশন", "অধঃক্ষেপ"], correct: 2, fact: "পানিতে ময়দার মিশ্রণ সাসপেনশন গঠন করে।" },
+            { id: 29, question: "পেপটাইজেশন পদ্ধতিতে তৈরি করা যায় কোনটি?", options: ["ইমালসন", "কলয়েড", "সাসপেনশন", "কোয়াগুলেশন"], correct: 1, fact: "অধঃক্ষেপকে উপযুক্ত তাড়কের উপস্থিতিতে কলয়েডে রূপান্তর করার পদ্ধতি হলো পেপটাইজেশন।" },
+            { id: 30, question: "সবচেয়ে কার্যকর কোয়াগুলেন্ট নিচের কোনটি?", options: ["KOH", "NaCl", "Mg(NO₃)₂", "Fe₂(SO₄)₃"], correct: 3, fact: "যোজ্যতা বেশি হওয়ায় Fe2(SO4)3 একটি অত্যন্ত কার্যকর তড়িৎবিশ্লেষ্য কোয়াগুলেন্ট।" },
+            { id: 31, question: "অস্ত্রের ইমেজিং কাজে ব্যবহৃত BaSO₄ মিশ্রণ নিচের কোন শ্রেণিভুক্ত?", options: ["কলয়েড", "সাসপেনশন", "কোয়াগুলেন্ট", "অক্সিডেশন"], correct: 1, fact: "বেরিয়াম সালফেট (BaSO4) এর সাসপেনশন এক্স-রে ইমেজিংয়ে ব্যবহৃত হয়।" },
+            { id: 32, question: "দুধ থেকে ছানা পাওয়ার প্রক্রিয়া হলো কোনটি?", options: ["আর্দ্র বিশ্লেষণ", "ফারমেন্টেশন", "কোয়াগুলেশন", "অধঃক্ষেপ"], correct: 2, fact: "এসিড যোগ করে দুধের প্রোটিন তঞ্চন বা কোয়াগুলেশন ঘটিয়ে ছানা প্রস্তুত করা হয়।" },
+            { id: 33, question: "মাখনকে পানিমুক্ত করা হয় কোন পদ্ধতিতে?", options: ["পানি শোষণ করে", "মাখনকে চাপ দিয়ে দলিত করে", "মাখনে P₂O₅ যোগ করে", "মাখনে CaO যোগ করে"], correct: 1, fact: "চাপ দিয়ে দলিত বা নিস্কাশন করে মাখন থেকে অতিরিক্ত পানি দূর করা হয়।" },
+            { id: 34, question: "ট্যালকম পাউডারের মূল উপাদান কোনটি?", options: ["ক্যালসিয়াম কার্বনেট", "বোরিক এসিড", "ট্যালক্", "ম্যাগ-কার্বনেট"], correct: 2, fact: "ট্যালকম পাউডারের মূল ও প্রধান উপাদান হলো ট্যাল্ক।" },
+            { id: 35, question: "ট্যালকম পাউডারের প্রধান উপাদান কোনটি?", options: ["ট্যাল্ক", "ZnO", "CaCO₃", "সুগন্ধি দ্রব্য"], correct: 0, fact: "ট্যাল্ক হলো হাইড্রেটেড ম্যাগনেসিয়াম সিলিকেট, যা পাউডারের প্রধান উপাদান।" },
+            { id: 36, question: "ট্যালকম পাউডার প্রস্তুতির মূল উপাদান হলো কোনটি?", options: ["3MgO.4SiO₂.H₂O", "Na₂B₄O₇.10H₂O", "C₃H₈O₃", "CaCO₃.MgCO₃"], correct: 0, fact: "ট্যালকের রাসায়নিক সংকেত 3MgO·4SiO2·H2O।" },
+            { id: 37, question: "কোনটি ট্যালকের সংযুক্তি?", options: ["4MgO.3SiO₂.H₂O", "3MgO.4SiO₂.H₂O", "3MgO.SiO₂.4H₂O", "4MgO.2SiO₂.H₂O"], correct: 1, fact: "ট্যালকের সঠিক সংযুক্তি 3MgO·4SiO2·H2O।" },
+            { id: 38, question: "বেবী পাউডারে কোনটি অ্যান্টিসেপ্টিক হিসেবে কাজ করে?", options: ["জিঙ্ক অক্সাইড", "টেলক", "ম্যাগনেসিয়াম কার্বনেট", "বোরিক এসিড"], correct: 3, fact: "শিশুর ত্বকের সুরক্ষায় বোরিক এসিড অ্যান্টিসেপ্টিক হিসেবে পাউডারে ব্যবহার করা হয়।" },
+            { id: 39, question: "ভেনিশিং ক্রিম এর প্রধান উপকরণ কোনটি?", options: ["সরবিটল", "পারফিউম", "গ্লিসারিন মনোস্টিয়ারেট", "কস্টিক পটাশ"], correct: 2, fact: "ভেনিশিং ক্রিমে ইমালসিফায়ার হিসেবে গ্লিসারিন মনোস্টিয়ারেট ব্যবহৃত হয়।" },
+            { id: 40, question: "কোল্ড ক্রিমে লুব্রিকেটিং এজেন্ট হিসেবে ব্যবহৃত হয় কোনটি?", options: ["তরল প্যারাফিন", "গ্লিসারিন", "প্রোপাইল প্যারাবেন", "মোম"], correct: 0, fact: "কোল্ড ক্রিমে ত্বক নরম ও পিচ্ছিল রাখতে তরল প্যারাফিন লুব্রিকেটিং এজেন্ট হিসেবে থাকে।" },
+            { id: 41, question: "লিপস্টিকের মূল উপাদান কোনটি?", options: ["মোম", "খনিজ তৈল", "রঞ্জক পদার্থ", "ভেসেলিন"], correct: 0, fact: "লিপস্টিকে গাঠনিক দৃঢ়তা দিতে মোম (Wax) মূল উপাদান হিসেবে কাজ করে।" },
+            { id: 42, question: "নিচের কোনটি ময়েশ্চারাইজাররূপে আফটার শেভ লোশনে ব্যবহৃত হয়?", options: ["গ্লিসারল", "ডি-ন্যাচার্ড অ্যালকোহল", "প্রোপাইলিন অ্যালকোহল", "ইথিলিন গ্লাইকল"], correct: 0, fact: "গ্লিসারল বা গ্লিসারিন ত্বক আর্দ্র রাখতে ময়েশ্চারাইজার হিসেবে কাজ করে।" },
+            { id: 43, question: "টয়লেট ক্লিনারের প্রধান উপাদান কোনটি?", options: ["অ্যামোনিয়া", "কস্টিক সোডা", "স্পিরিট", "লবণ"], correct: 1, fact: "টয়লেট ক্লিনারে পরিষ্কারক হিসেবে কস্টিক সোডা (NaOH) ব্যবহৃত হয়।" },
+            { id: 44, question: "টয়লেট ক্লিনারের মূল উপাদান কোনটি?", options: ["Na₂CO₃", "NaOH", "(NH₄)₂CO₃", "NH₄OH"], correct: 1, fact: "NaOH বা কস্টিক সোডা চর্বি ও ময়দা জাতীয় ময়লা সাবানীকরণ করে পরিষ্কার করে।" },
+            { id: 45, question: "গ্লাস ক্লিনারের প্রধান ক্লিনিং উপাদান কোনটি?", options: ["কস্টিক সোডা", "ডিটারজেন্ট", "অ্যামোনিয়া দ্রবণ", "সোডিয়াম হাইপোক্লোরাইট"], correct: 2, fact: "গ্লাস ক্লিনারে কাচের দাগ ও তেলতেলে ভাব দূর করতে অ্যামোনিয়া দ্রবণ ব্যবহৃত হয়।" },
+            { id: 46, question: "কোনটি গ্লাস ক্লিনারের প্রধান উপাদান?", options: ["ভিনেগার", "অ্যাকুয়া অ্যামোনিয়া", "NaOH", "Na-লরাইল সালফেট"], correct: 1, fact: "অ্যাকুয়া অ্যামোনিয়া (NH4OH এর জলীয় দ্রবণ) গ্লাস ক্লিনারের মূল উপাদান।" },
+            { id: 47, question: "গ্লাস ক্লিনারের মূল উপাদান কোনটি?", options: ["ইথাইল অ্যালকোহল", "অ্যামোনিয়া দ্রবণ", "iso-বিউটাইল অ্যালকোহল", "iso-প্রোপাইল অ্যালকোহল"], correct: 1, fact: "অ্যামোনিয়া দ্রবণ গ্লাস ক্লিনারের কাজে ব্যবহৃত হয়।" },
+            { id: 48, question: "গ্লাস ক্লিনার ব্যবহৃত রাবিং অ্যালকোহল নিচের কোনটি?", options: ["iso-প্রোপাইল অ্যালকোহল", "iso-বিউটাইল অ্যালকোহল", "tert-বিউটাইল অ্যালকোহল", "ইথাইল অ্যালকোহল"], correct: 0, fact: "আইসো-প্রোপাইল অ্যালকোহলকে রাবিং অ্যালকোহল বলা হয়।" },
+            { id: 49, question: "মেহেদির রং এর কারণ কোন রাসায়নিক দ্রব্য?", options: ["ল্যানোলিন", "লাসোন", "অলিক এসিড", "উইন্টাল গ্রিন"], correct: 1, fact: "মেহেদি পাতায় থাকা 'লাসোন' (Lawsone) নামক রঞ্জক পদার্থের কারণে হাত রাঙা হয়।" },
+            { id: 50, question: "গাঁজন প্রক্রিয়ায় কোন পরিবর্তন সম্পন্ন হয়?", options: ["গ্লুকোজ থেকে ইথানল", "সুক্রোজ থেকে গ্লুকোজ", "ইথানল থেকে অ্যাসিটিক এসিড", "ইথান্যাল থেকে অ্যাসিটিক এসিড"], correct: 0, fact: "জাইমেজ এনজাইমের উপস্থিতিতে গ্লুকোজ থেকে গাঁজন প্রক্রিয়ায় ইথানল ও CO₂ উৎপন্ন হয়।" },
+            { id: 51, question: "ভিনেগারে থাকে কোনটি?", options: ["6-10% CH₃COOH, 94-90% পানি", "6-10% C₂H₅OH, 94-90% পানি", "6-10% CH₃COCH₃, 94-90% পানি", "6-10% CH₃CHO, 94-90% পানি"], correct: 0, fact: "ভিনেগার হলো ইথানোয়িক এসিডের (CH3COOH) ৬% থেকে ১০% জলীয় দ্রবণ।" },
+            { id: 52, question: "ভিনেগার তৈরিতে নিচের কোনটির জলীয় দ্রবণ ব্যবহৃত হয়?", options: ["ভিনাইল অ্যাসিটেট", "অ্যাসিটিক এসিড", "মিথান্যাল", "ভিনাইল ক্লোরাইড"], correct: 1, fact: "অ্যাসিটিক এসিড বা ইথানোয়িক এসিডের জলীয় দ্রবণই ভিনেগার।" },
+            { id: 53, question: "মল্ট ভিনেগার প্রস্তুতিতে সুক্রোজের আর্দ্রবিশ্লেষণে কোন এনজাইম ব্যবহৃত হয়?", options: ["ডায়াস্টেজ", "জাইমেজ", "ম্যাল্টেজ", "ইনভার্টেজ"], correct: 3, fact: "ইনভার্টেজ এনজাইম সুক্রোজকে ভেঙে গ্লুকোজ ও ফ্রুকটোজ তৈরি করে।" },
+            { id: 54, question: "ফরমালিনে কী পরিমাণ মিথান্যাল থাকে?", options: ["52%", "40%", "20%", "৮%"], correct: 1, fact: "ফরমালিন হলো ফরমালডিহাইড বা মিথান্যালের (HCHO) ৪০% জলীয় দ্রবণ।" },
+            { id: 55, question: "কোনটি ন্যাচারাল ফুড প্রিজারভেটিভ?", options: ["সল্ট (লবণ)", "ভিনেগার", "অ্যাসিটিক অ্যাসিড", "কোনোটিই নয়"], correct: 0, fact: "সাধারণ লবণ একটি প্রাকৃতিক ফুড প্রিজারভেটিভ।" },
+            { id: 56, question: "কোনটি প্রাকৃতিক প্রিজারভেটিভ নয়?", options: ["সরিষার তেল", "চিনির দ্রবণ", "অ্যাসিটিক অ্যাসিড", "কোনোটিই নয়"], correct: 2, fact: "অ্যাসিটিক অ্যাসিড কৃত্রিম খাদ্য সংরক্ষক।" },
+            { id: 57, question: "কোনটি কৃত্রিম প্রিজারভেটিভ?", options: ["সোডিয়াম বেনজোয়েট", "সরিষার তেল", "ইথানল", "এসকরবিক এসিড"], correct: 0, fact: "সোডিয়াম বেনজোয়েট একটি বহুল ব্যবহৃত কৃত্রিম প্রিজারভেটিভ।" },
+            { id: 58, question: "ফুড প্রিজারভেটিভ এ ব্যবহৃত সায়ট্রিক এসিডের pH কত?", options: ["pH 4.74", "pH 4.50", "pH 3.14", "pH 3.01"], correct: 2, fact: "সাইট্রিক এসিড দ্রবণের pH প্রায় 3.14 হয়ে থাকে।" },
+            { id: 59, question: "কাঁঠাল কৌটাজাত করতে কোনটি ব্যবহার করা হয়?", options: ["সিসটিন", "সায়ট্রিক এসিড", "এসকরবিক এসিড", "কার্বনিক এসিড"], correct: 1, fact: "কাঁঠাল কৌটাজাত করতে সায়ট্রিক এসিড, পেয়ারা কৌটাজাত করতে এসকরবিক এসিড ব্যবহৃত হয়।" },
+            { id: 60, question: "গাভীর দুধে কত % পানি থাকে?", options: ["78.2", "80.2", "87.2", "90.2"], correct: 2, fact: "সাধারণ গাভীর দুধে প্রায় ৮৭.২% পানি থাকে।" },
+            { id: 61, question: "দুধে কোন ডাইস্যাকারাইড থাকে?", options: ["সুক্রোজ", "ল্যাকটোজ", "মল্টোজ", "সেলুলোজ"], correct: 1, fact: "দুধে ল্যাকটোজ নামক শর্করা বিদ্যমান।" },
+            { id: 62, question: "কোনটি দুধের মিষ্টতা বাড়ায়?", options: ["সায়ট্রেট", "খনিজ লবণ", "প্রোটিন", "ল্যাকটোজ"], correct: 3, fact: "ল্যাকটোজ শর্করার উপস্থিতির কারণে দুধ সামান্য মিষ্টি লাগে।" },
+            { id: 63, question: "গাভীর দুধে খাদ্য ক্যালরি (kcal/100 g) কত?", options: ["72", "66", "70", "102"], correct: 2, fact: "প্রতি ১০০ গ্রাম গাভীর দুধে প্রায় ৭০ কিলো ক্যালরি শক্তি থাকে।" },
+            { id: 64, question: "আমাদের খাদ্যের কোন উপাদান দেহে কর্মশক্তি দিয়ে থাকে?", options: ["আমিষ", "শর্করা", "খাদ্যপ্রাণ", "স্নেহ পদার্থ"], correct: 1, fact: "শর্করা জাতীয় খাদ্য আমাদের দেহে দ্রুত শক্তি সরবরাহ করে।" },
+            { id: 65, question: "কোন শর্করাটি মানবদেহে পরিপাকের কাজে এবং শক্তি উৎপাদনে সবচেয়ে বেশি ব্যবহৃত হয়?", options: ["Fructose", "Glucose", "Ribose", "Galactose"], correct: 1, fact: "গ্লুকোজ হলো প্রধান মনোস্যাকারাইড যা শক্তি উৎপাদনে সরাসরি ব্যবহৃত হয়।" },
+            { id: 66, question: "টেলকম পাউডারের প্রধান উপাদান হলো কোনটি?", options: ["টেলক", "ZnO", "MgCO₃", "সুগন্ধি দ্রব্য"], correct: 0, fact: "টেলকম পাউডারের মূল উপাদান হলো টেলক।" },
+            { id: 67, question: "নেইল পলিশ এর দ্রাবক কোনটি?", options: ["ইথানোয়িক এসিড", "ইথাইল ইথানোয়েট", "ইথাইল অ্যালকোহল", "কার্বোক্সিলিক এসিড"], correct: 2, fact: "ইথাইল অ্যালকোহল নেইল পলিশ রিমুভার বা দ্রাবক হিসেবে ব্যবহৃত হয়।" },
+            { id: 68, question: "মেহেদি পাতার নির্যাসে কোন যৌগটির প্রাধান্য থাকে?", options: ["2-হাইড্রোক্সি বেনজো কুইনোন", "বেনজো কুইনোন", "2-হাইড্রোক্সি 1, 4-ন্যাপথা কুইনোন", "ডায়াজোনিয়াম ক্লোরাইড"], correct: 2, fact: "মেহেদি পাতার রঞ্জক পদার্থ হলো 2-হাইড্রোক্সি 1,4-ন্যাপথা কুইনোন (লাসোন)।" },
+            { id: 69, question: "গাঁজন প্রক্রিয়ায় ইথানল উৎপাদনে কোনটি ব্যবহার করা হয়?", options: ["শ্বেতসার", "চিটাগুড়", "সেলুলোজ", "জাইমেজ"], correct: 0, fact: "শ্বেতসার থেকে গাঁজন প্রক্রিয়ায় অ্যালকোহল বা ইথানল প্রস্তুত করা হয়।" },
+            { id: 70, question: "ভিনেগার সম্পর্কে নিচের কোনটি সত্য নয়?", options: ["ইথানোয়িক এসিডের 6-10% জলীয় দ্রবণ", "খাবারের প্রক্রিয়াজাতকরণের পর বাষ্পায়িত হয় না", "খাবার ও দেহের pH এর সমতা বজায় রাখে", "কৃত্রিম বা রাসায়নিক ফুড প্রিজারভেটিভ"], correct: 1, fact: "ভিনেগার প্রাকৃতিক উপায়ে বা ফরমিক/এসিটিক গাঁজনের মাধ্যমে তৈরি হতে পারে, এটি শতভাগ নিখাদ কৃত্রিম নয়।" },
+            { id: 71, question: "নিচের কোনটি প্রিজারভেটিভরূপে ব্যবহৃত হয়?", options: ["Na₂SO₄", "NaNO₃", "CH₃COONa", "C₆H₅COONa"], correct: 3, fact: "সোডিয়াম বেনজোয়েট (C6H5COONa) খাদ্য সংরক্ষণে বহুল ব্যবহৃত হয়।" },
+            { id: 72, question: "শতকরা হিসাবে দুধের প্রধান উপাদান কোনটি?", options: ["চর্বি", "আমিষ", "শর্করা", "পানি"], correct: 3, fact: "দুধের প্রায় 82-88% অংশই পানি।" },
+            { id: 73, question: "কোন্ আয়নের স্বল্প পরিমাণ কোয়াগুলেশন দ্রুত করে?", options: ["Na⁺", "Mg²⁺", "Ba²⁺", "Al³⁺"], correct: 3, fact: "হার্ডি-শুল্জ নিয়ম অনুযায়ী বেশি চার্জযুক্ত আয়ন (যেমন Al3+) দ্রুত কোয়াগুলেশন ঘটায়।" },
+            { id: 74, question: "কোনটি অ্যান্টিঅক্সিডেন্ট?", options: ["সোডিয়াম বেনজোয়েট", "সায়ট্রিক এসিড", "বিউটাইলেটেড হাইড্রক্সিএনিসল (BHA)", "সোডিয়াম নাইট্রাইট"], correct: 2, fact: "BHA একটি জনপ্রিয় কৃত্রিম অ্যান্টিঅক্সিডেন্ট যা খাবারের জারণ রোধ করে।" }
+        ];
+
+        let currentQuestionIdx = 0;
+        let userAnswers = new Array(quizData.length).fill(null);
+
+        // Bookmarks persist in this browser using localStorage.
+        // Export/Import lets you transfer them between browsers or devices.
+        const BOOKMARK_STORAGE_KEY = 'ch5_c03_bookmarked_questions_v1';
+        let bookmarkedQuestionIds = loadBookmarkedQuestionIds();
+
+        function loadBookmarkedQuestionIds() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(BOOKMARK_STORAGE_KEY) || '[]');
+                if (!Array.isArray(saved)) return [];
+                const validIds = new Set(quizData.map(q => q.id));
+                return [...new Set(saved.map(Number).filter(id => Number.isInteger(id) && validIds.has(id)))];
+            } catch (error) {
+                console.warn('Could not load saved bookmarks:', error);
+                return [];
+            }
+        }
+
+        function saveBookmarkedQuestionIds() {
+            try {
+                localStorage.setItem(BOOKMARK_STORAGE_KEY, JSON.stringify(bookmarkedQuestionIds));
+                return true;
+            } catch (error) {
+                alert('এই ব্রাউজারে বুকমার্ক সংরক্ষণ করা যায়নি। ব্রাউজারের storage permission পরীক্ষা করুন এবং ব্যাকআপ ব্যবহার করুন।');
+                console.error('Could not save bookmarks:', error);
+                return false;
+            }
+        }
+
+        function toggleCurrentBookmark() {
+            const question = quizData[currentQuestionIdx];
+            if (!question) return;
+            if (bookmarkedQuestionIds.includes(question.id)) {
+                bookmarkedQuestionIds = bookmarkedQuestionIds.filter(id => id !== question.id);
+            } else {
+                bookmarkedQuestionIds.push(question.id);
+            }
+            saveBookmarkedQuestionIds();
+            updateBookmarkUI();
+        }
+
+        function updateBookmarkUI() {
+            const question = quizData[currentQuestionIdx];
+            const button = document.getElementById('bookmark-current-btn');
+            if (button && question) {
+                const saved = bookmarkedQuestionIds.includes(question.id);
+                button.textContent = saved ? '★ বুকমার্ক করা হয়েছে' : '☆ বুকমার্ক করুন';
+                button.setAttribute('aria-pressed', String(saved));
+                button.className = saved
+                    ? 'animated-btn px-3 py-1.5 rounded-xl text-xs md:text-sm font-semibold bg-amber-500/20 text-amber-200 hover:bg-amber-500/30 border border-amber-400/50'
+                    : 'animated-btn px-3 py-1.5 rounded-xl text-xs md:text-sm font-semibold bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 border border-amber-500/30';
+            }
+
+            const list = document.getElementById('bookmark-list');
+            const count = document.getElementById('bookmark-count');
+            if (!list || !count) return;
+            count.textContent = bookmarkedQuestionIds.length;
+            list.innerHTML = '';
+
+            if (bookmarkedQuestionIds.length === 0) {
+                const empty = document.createElement('p');
+                empty.className = 'text-sm text-slate-500 py-3 text-center';
+                empty.textContent = 'এখনও কোনো প্রশ্ন বুকমার্ক করা হয়নি।';
+                list.appendChild(empty);
+                return;
+            }
+
+            bookmarkedQuestionIds
+                .map(id => quizData.find(q => q.id === id))
+                .filter(Boolean)
+                .sort((a, b) => a.id - b.id)
+                .forEach(q => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'w-full text-left p-3 rounded-xl bg-slate-900/70 hover:bg-amber-500/10 border border-slate-800 hover:border-amber-500/40 transition-colors';
+                    const number = document.createElement('span');
+                    number.className = 'block text-xs font-bold text-amber-300 mb-1';
+                    number.textContent = '★ প্রশ্ন ' + q.id;
+                    const text = document.createElement('span');
+                    text.className = 'block text-sm text-slate-200 leading-relaxed';
+                    text.textContent = q.question;
+                    btn.append(number, text);
+                    btn.addEventListener('click', () => jumpToQuestion(quizData.findIndex(item => item.id === q.id)));
+                    list.appendChild(btn);
+                });
+        }
+
+        function exportBookmarks() {
+            const backup = {
+                version: 1,
+                quiz: 'কর্মমুখী রসায়ন (C-05)',
+                exportedAt: new Date().toISOString(),
+                bookmarks: bookmarkedQuestionIds
+            };
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Ch-5-bookmarks-backup.json';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        function importBookmarks(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const data = JSON.parse(String(reader.result || ''));
+                    const ids = Array.isArray(data) ? data : data.bookmarks;
+                    if (!Array.isArray(ids)) throw new Error('Invalid bookmark backup format');
+                    const validIds = new Set(quizData.map(q => q.id));
+                    const imported = ids.map(Number).filter(id => Number.isInteger(id) && validIds.has(id));
+                    bookmarkedQuestionIds = [...new Set([...bookmarkedQuestionIds, ...imported])];
+                    saveBookmarkedQuestionIds();
+                    updateBookmarkUI();
+                    alert(imported.length + 'টি বুকমার্ক ফাইল থেকে নেওয়া হয়েছে (আগের বুকমার্কগুলোও রাখা হয়েছে)।');
+                } catch (error) {
+                    alert('ব্যাকআপ ফাইলটি পড়া যায়নি। সঠিক Ch-5 bookmark JSON ফাইল নির্বাচন করুন।');
+                    console.error('Could not import bookmarks:', error);
+                } finally {
+                    event.target.value = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // DOM Element Caching
+        const questionBadge = document.getElementById('question-badge');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const rationaleBox = document.getElementById('rationale-box');
+        const rationaleTitle = document.getElementById('rationale-title');
+        const rationaleText = document.getElementById('rationale-text');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const navGrid = document.getElementById('nav-grid');
+
+        const statTotal = document.getElementById('stat-total');
+        const statAnswered = document.getElementById('stat-answered');
+        const statScore = document.getElementById('stat-score');
+        const progressBar = document.getElementById('progress-bar');
+        const completionTag = document.getElementById('completion-tag');
+
+        function initQuiz() {
+            statTotal.innerText = quizData.length;
+            userAnswers = new Array(quizData.length).fill(null);
+            buildNavigatorGrid();
+            if (quizData.length > 0) {
+                renderQuestion(0);
+            }
+            updateStats();
+        }
+
+        function buildNavigatorGrid() {
+            navGrid.innerHTML = '';
+            quizData.forEach((_, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `nav-btn-${idx}`;
+                btn.innerText = idx + 1;
+                btn.onclick = () => jumpToQuestion(idx);
+                btn.className = `w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all border ${getNavBtnClass(idx)}`;
+                navGrid.appendChild(btn);
+            });
+        }
+
+        function getNavBtnClass(idx) {
+            if (idx === currentQuestionIdx) {
+                return "bg-indigo-600 text-white border-indigo-400 ring-2 ring-indigo-500/50 shadow-md";
+            }
+            if (userAnswers[idx] !== null) {
+                const isCorrect = userAnswers[idx] === quizData[idx].correct;
+                return isCorrect 
+                    ? "bg-emerald-950/80 text-emerald-400 border-emerald-800" 
+                    : "bg-rose-950/80 text-rose-400 border-rose-800";
+            }
+            return "bg-slate-900/80 text-slate-400 border-slate-800 hover:bg-slate-800";
+        }
+
+        function updateNavigator() {
+            quizData.forEach((_, idx) => {
+                const btn = document.getElementById(`nav-btn-${idx}`);
+                if (btn) {
+                    btn.className = `w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all border ${getNavBtnClass(idx)}`;
+                }
+            });
+        }
+
+        function renderQuestion(idx) {
+            if (quizData.length === 0) return;
+            currentQuestionIdx = idx;
+            const item = quizData[idx];
+
+            questionBadge.innerText = `প্রশ্ন ${idx + 1} / ${quizData.length}`;
+            questionText.innerText = item.question;
+
+            optionsContainer.innerHTML = '';
+            const userAns = userAnswers[idx];
+            const optionPrefixes = ['ক', 'খ', 'গ', 'ঘ'];
+
+            item.options.forEach((optText, optIdx) => {
+                const btn = document.createElement('button');
+                btn.onclick = () => selectOption(optIdx);
+
+                let btnStyle = "bg-slate-900/60 hover:bg-slate-800/80 border-slate-800 text-slate-200";
+
+                if (userAns !== null) {
+                    if (optIdx === item.correct) {
+                        btnStyle = "bg-emerald-950/50 border-emerald-500/80 text-emerald-200 font-medium";
+                    } else if (optIdx === userAns) {
+                        btnStyle = "bg-rose-950/50 border-rose-500/80 text-rose-200";
+                    } else {
+                        btnStyle = "bg-slate-950/30 border-slate-900 text-slate-500 opacity-50";
+                    }
+                }
+
+                btn.className = `w-full text-left p-4 rounded-2xl border text-sm md:text-base transition-all duration-200 flex items-center justify-between group ${btnStyle}`;
+                
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-xl border border-slate-700 bg-slate-900/80 flex items-center justify-center text-xs font-bold text-slate-400 flex-shrink-0 group-hover:border-indigo-500 transition-colors">
+                            ${optionPrefixes[optIdx]}
+                        </span>
+                        <span>${optText}</span>
+                    </div>
+                    ${userAns !== null && optIdx === item.correct ? '<span class="text-emerald-400 font-bold text-base">✓</span>' : ''}
+                    ${userAns !== null && optIdx === userAns && optIdx !== item.correct ? '<span class="text-rose-400 font-bold text-base">✕</span>' : ''}
+                `;
+
+                if (userAns !== null) {
+                    btn.disabled = true;
+                }
+
+                optionsContainer.appendChild(btn);
+            });
+
+            if (userAns !== null) {
+                rationaleBox.classList.remove('hidden');
+                const isCorrect = userAns === item.correct;
+                if (isCorrect) {
+                    rationaleBox.className = "mb-6 p-4 rounded-2xl border border-emerald-500/30 bg-emerald-950/30 text-emerald-300 text-sm";
+                    rationaleTitle.innerHTML = "<span class='text-emerald-400'>✓ সঠিক উত্তর!</span>";
+                } else {
+                    rationaleBox.className = "mb-6 p-4 rounded-2xl border border-rose-500/30 bg-rose-950/30 text-rose-300 text-sm";
+                    rationaleTitle.innerHTML = "<span class='text-rose-400'>✕ ভুল উত্তর! সঠিক উত্তর: " + optionPrefixes[item.correct] + ". " + item.options[item.correct] + "</span>";
+                }
+                rationaleText.innerText = item.fact;
+            } else {
+                rationaleBox.classList.add('hidden');
+            }
+
+            prevBtn.disabled = idx === 0;
+            if (idx === quizData.length - 1) {
+                nextBtn.innerText = "ফলাফল দেখুন 🏆";
+            } else {
+                nextBtn.innerText = "পরবর্তী →";
+            }
+
+            updateNavigator();
+            updateBookmarkUI();
+        }
+
+        function selectOption(optIdx) {
+            if (userAnswers[currentQuestionIdx] !== null) return;
+
+            userAnswers[currentQuestionIdx] = optIdx;
+            renderQuestion(currentQuestionIdx);
+            updateStats();
+
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            if (answeredCount === quizData.length) {
+                setTimeout(showResults, 1200);
+            }
+        }
+
+        function navigateQuestion(direction) {
+            const newIdx = currentQuestionIdx + direction;
+            if (newIdx >= 0 && newIdx < quizData.length) {
+                renderQuestion(newIdx);
+            } else if (newIdx >= quizData.length) {
+                showResults();
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('quiz-card').classList.remove('hidden');
+            document.getElementById('quiz-bookmark-layout').style.gridTemplateColumns = '';
+            document.getElementById('stats-strip').classList.remove('hidden');
+            document.getElementById('review-container').classList.add('hidden');
+            renderQuestion(idx);
+        }
+
+        function updateStats() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            let score = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans === quizData[idx].correct) score++;
+            });
+
+            statAnswered.innerText = answered;
+            statScore.innerText = score;
+
+            const percentage = quizData.length > 0 ? Math.round((answered / quizData.length) * 100) : 0;
+            progressBar.style.width = `${percentage}%`;
+            completionTag.innerText = `${percentage}% সম্পন্ন`;
+        }
+
+        function showResults() {
+            document.getElementById('quiz-card').classList.add('hidden');
+            document.getElementById('quiz-bookmark-layout').style.gridTemplateColumns = 'minmax(0, 1fr)';
+            document.getElementById('stats-strip').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            const total = quizData.length;
+            let correct = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans === quizData[idx].correct) correct++;
+            });
+            const wrong = userAnswers.filter(a => a !== null).length - correct;
+            const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+            document.getElementById('res-total').innerText = total;
+            document.getElementById('res-correct').innerText = correct;
+            document.getElementById('res-wrong').innerText = wrong;
+            document.getElementById('res-accuracy').innerText = `${accuracy}%`;
+
+            buildReviewList();
+        }
+
+        function buildReviewList() {
+            const reviewList = document.getElementById('review-list');
+            reviewList.innerHTML = '';
+            const optionPrefixes = ['ক', 'খ', 'গ', 'ঘ'];
+
+            quizData.forEach((q, idx) => {
+                const userAns = userAnswers[idx];
+                const isCorrect = userAns === q.correct;
+                const isUnanswered = userAns === null;
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = `p-4 rounded-2xl border text-sm ${
+                    isCorrect 
+                        ? 'bg-emerald-950/20 border-emerald-800/60' 
+                        : isUnanswered 
+                        ? 'bg-slate-900/40 border-slate-800' 
+                        : 'bg-rose-950/20 border-rose-800/60'
+                }`;
+
+                itemDiv.innerHTML = `
+                    <div class="font-bold text-slate-200 mb-1 leading-snug">
+                        ${idx + 1}. ${q.question}
+                    </div>
+                    <div class="text-xs text-slate-400 mb-1">
+                        আপনার উত্তর: <span class="${isCorrect ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold'}">${userAns !== null ? optionPrefixes[userAns] + '. ' + q.options[userAns] : 'উত্তর দেওয়া হয়নি'}</span>
+                    </div>
+                    <div class="text-xs text-emerald-400 mb-2">
+                        সঠিক উত্তর: ${optionPrefixes[q.correct]}. ${q.options[q.correct]}
+                    </div>
+                    <div class="text-xs bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-indigo-300">
+                        💡 <strong>ব্যাখ্যা:</strong> ${q.fact}
+                    </div>
+                `;
+
+                reviewList.appendChild(itemDiv);
+            });
+        }
+
+        function toggleReviewMode() {
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.classList.toggle('hidden');
+        }
+
+        function restartQuiz() {
+            executeReset();
+        }
+
+        function confirmReset() {
+            document.getElementById('reset-modal').classList.remove('hidden');
+        }
+
+        function closeResetModal() {
+            document.getElementById('reset-modal').classList.add('hidden');
+        }
+
+        function executeReset() {
+            userAnswers = new Array(quizData.length).fill(null);
+            currentQuestionIdx = 0;
+
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('review-container').classList.add('hidden');
+            document.getElementById('quiz-card').classList.remove('hidden');
+            document.getElementById('quiz-bookmark-layout').style.gridTemplateColumns = '';
+            document.getElementById('stats-strip').classList.remove('hidden');
+
+            closeResetModal();
+            buildNavigatorGrid();
+            renderQuestion(0);
+            updateStats();
+        }
+
+        window.onload = () => { initQuiz(); updateBookmarkUI(); };
+    </script>
+</body>
+</html>
